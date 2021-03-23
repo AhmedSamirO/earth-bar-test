@@ -1,7 +1,7 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import { Button, Grid, TextField, Typography } from '@material-ui/core'
-import LinkComponent from './LinkComponent'
+import LinkComponent, { LinkComponentType } from './LinkComponent'
 import SelectBox from '../../shared/SelectBox'
 
 const useStyles = makeStyles({
@@ -30,6 +30,27 @@ const useStyles = makeStyles({
 
 export default function SideBar() {
   const classes = useStyles()
+
+  const [baseMaterial, setBaseMaterial] = useState('')
+  const [feetMaterial, setFeetMaterial] = useState('')
+  const [copperBarSize, setCopperBarSize] = useState('')
+  const [barFinish, setBarFinish] = useState('')
+  const [insulatorMaterial, setInsulatorMaterial] = useState('')
+  const [insulatorSize, setInsulatorSize] = useState('')
+  const [terminationMaterial, setTerminationMaterial] = useState('')
+  const [linkConfiguration, setLinkConfiguration] = useState(0)
+
+  const [links, setLinks] = useState<Array<LinkComponentType>>([
+    {
+      positionOfFeet: 0,
+      holes: 0,
+      column3: 0,
+      fittingType: 'Insulator',
+      terminationsSize: 'M10',
+      terminationsSpacing: '50mm',
+      repeatCount: 0,
+    },
+  ])
 
   const baseMaterialOptions = [
     'Black PVC (full length)',
@@ -103,7 +124,13 @@ export default function SideBar() {
           <Typography variant='subtitle1'>Base Material</Typography>
         </Grid>
         <Grid item xs={5}>
-          {<SelectBox options={baseMaterialOptions} />}
+          {
+            <SelectBox
+              options={baseMaterialOptions}
+              value={baseMaterial}
+              onChange={setBaseMaterial}
+            />
+          }
         </Grid>
 
         <Grid item xs={7}>
@@ -128,54 +155,103 @@ export default function SideBar() {
           <Typography variant='subtitle1'>Feet Material</Typography>
         </Grid>
         <Grid item xs={5}>
-          {<SelectBox options={feetMaterialOptions} />}
+          {
+            <SelectBox
+              options={feetMaterialOptions}
+              value={feetMaterial}
+              onChange={setFeetMaterial}
+            />
+          }
         </Grid>
 
         <Grid item xs={7}>
           <Typography variant='subtitle1'>Copper Bar Size</Typography>
         </Grid>
         <Grid item xs={5}>
-          {<SelectBox options={copperBarSizeOptions} />}
+          {
+            <SelectBox
+              options={copperBarSizeOptions}
+              value={copperBarSize}
+              onChange={setCopperBarSize}
+            />
+          }
         </Grid>
 
         <Grid item xs={7}>
           <Typography variant='subtitle1'>Bar Finish</Typography>
         </Grid>
         <Grid item xs={5}>
-          {<SelectBox options={barFinishOptions} />}
+          {
+            <SelectBox
+              options={barFinishOptions}
+              value={barFinish}
+              onChange={setBarFinish}
+            />
+          }
         </Grid>
 
         <Grid item xs={7}>
           <Typography variant='subtitle1'>Insulator Material</Typography>
         </Grid>
         <Grid item xs={5}>
-          {<SelectBox options={insulatorMaterialOptions} />}
+          {
+            <SelectBox
+              options={insulatorMaterialOptions}
+              value={insulatorMaterial}
+              onChange={setInsulatorMaterial}
+            />
+          }
         </Grid>
 
         <Grid item xs={7}>
           <Typography variant='subtitle1'>Insulator Size</Typography>
         </Grid>
         <Grid item xs={5}>
-          {<SelectBox options={insulatorSizeOptions} />}
+          {
+            <SelectBox
+              options={insulatorSizeOptions}
+              value={insulatorSize}
+              onChange={setInsulatorSize}
+            />
+          }
         </Grid>
 
         <Grid item xs={7}>
           <Typography variant='subtitle1'>Termination Material</Typography>
         </Grid>
         <Grid item xs={5}>
-          {<SelectBox options={terminationMaterialOptions} />}
+          {
+            <SelectBox
+              options={terminationMaterialOptions}
+              value={terminationMaterial}
+              onChange={setTerminationMaterial}
+            />
+          }
         </Grid>
 
         <Grid item xs={7}>
           <Typography variant='subtitle1'>Link Configuration</Typography>
         </Grid>
         <Grid item xs={5}>
-          <TextField type='number' defaultValue={0} />
+          <TextField
+            type='number'
+            value={linkConfiguration}
+            onChange={event => {
+              setLinkConfiguration(Number(event.target.value))
+            }}
+          />
         </Grid>
       </Grid>
-      <Grid container justify='space-between' className={classes.mainContainer}>
-        {<LinkComponent />}
-      </Grid>
+      {links.map((_, index) => (
+        <Grid
+          container
+          justify='space-between'
+          className={classes.mainContainer}
+          key={index}
+        >
+          <LinkComponent index={index} links={links} setLinks={setLinks} />
+        </Grid>
+      ))}
     </Grid>
   )
 }
