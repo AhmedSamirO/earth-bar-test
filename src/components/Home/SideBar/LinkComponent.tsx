@@ -46,7 +46,7 @@ export default function LinkComponent(props: LinkComponentProps) {
 
   const [firstTime, setFirstTime] = useState(true)
 
-  const fittingTypeOptions = ['Link', 'Insulator']
+  const fittingTypeOptions = ['Link', 'Insulator', 'Termination']
   const terminationsSizeOptions = [
     'M4',
     'M6',
