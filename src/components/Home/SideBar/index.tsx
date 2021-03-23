@@ -31,7 +31,6 @@ const useStyles = makeStyles({
 export default function SideBar() {
   const classes = useStyles()
 
-  const options2 = ['s1', 's2', 's3']
   const baseMaterialOptions = [
     'Black PVC (full length)',
     'AVG Galvanised Steel (full length)',
