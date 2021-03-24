@@ -3,9 +3,9 @@ import { FormControl, Select } from '@material-ui/core'
 
 declare type SelectProps = {
   defaultValue?: string
-  options: string[]
+  options: string[] | number[]
   onChange: Function
-  value?: string
+  value?: string | number
 }
 
 export default function SelectBox(props: SelectProps) {
@@ -21,7 +21,7 @@ export default function SelectBox(props: SelectProps) {
     <div>
       <FormControl fullWidth>
         <Select native value={value} onChange={handleChange} fullWidth>
-          {options.map(option => (
+          {options.map((option: string | number) => (
             <option key={option} value={option}>
               {option}
             </option>

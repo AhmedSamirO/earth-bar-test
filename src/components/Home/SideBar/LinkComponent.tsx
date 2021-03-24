@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import { Grid, TextField, Typography } from '@material-ui/core'
 import SelectBox from '../../shared/SelectBox'
+import ColumnComponent from './Column'
 
 const useStyles = makeStyles({
   subContainer: {
@@ -13,14 +14,20 @@ const useStyles = makeStyles({
   },
 })
 
+export declare type LinkColumnType = {
+  value: number
+  isVisible: boolean
+}
+
 export declare type LinkComponentType = {
   positionOfFeet: number
   holes: number
-  column3: number
   fittingType: string
   terminationsSize: string
   terminationsSpacing: string
   repeatCount: number
+  rowsNumber: number
+  columns: LinkColumnType[]
 }
 
 declare type LinkComponentProps = {
@@ -37,14 +44,22 @@ export default function LinkComponent(props: LinkComponentProps) {
   const [link, setLink] = useState<LinkComponentType>({
     positionOfFeet: 0,
     holes: 0,
-    column3: 0,
     fittingType: 'Insulator',
     terminationsSize: 'M10',
     terminationsSpacing: '50mm',
-    repeatCount: 0,
+    repeatCount: 1,
+    rowsNumber: 1,
+    columns: [],
   })
 
   const [firstTime, setFirstTime] = useState(true)
+
+  const emptyColumn: LinkColumnType = {
+    value: 0,
+    isVisible: true,
+  }
+
+  const [thirdColumnIndex, setThirdColumnIndex] = useState(-1)
 
   const fittingTypeOptions = ['Link', 'Insulator', 'Termination']
   const terminationsSizeOptions = [
@@ -70,6 +85,8 @@ export default function LinkComponent(props: LinkComponentProps) {
     'Varying Spacings ',
   ]
 
+  const rowsNumberOptions = [1, 2, 3]
+
   useEffect(() => {
     const newLinks = [...links]
     newLinks[index] = link
@@ -83,6 +100,49 @@ export default function LinkComponent(props: LinkComponentProps) {
       setLink(links[index])
     }
   }, [links])
+
+  const onChangeRepeatCount = (link: LinkComponentType, value: number) => {
+    const newLink = { ...link, repeatCount: value }
+
+    if (thirdColumnIndex > -1) {
+      let oldThirdItemValue = newLink.columns[thirdColumnIndex].value
+
+      newLink.columns = newLink.columns.map((currentColumn, columnIndex) => {
+        if (
+          columnIndex > thirdColumnIndex &&
+          columnIndex <= thirdColumnIndex + Number(link.repeatCount) - 1
+        ) {
+          oldThirdItemValue = oldThirdItemValue - currentColumn.value
+          return {
+            ...currentColumn,
+            isVisible: true,
+          }
+        }
+        return currentColumn
+      })
+      newLink.columns[thirdColumnIndex].value = oldThirdItemValue
+
+      let newThirdItemValue = oldThirdItemValue
+      newLink.columns = newLink.columns.map((currentColumn, columnIndex) => {
+        if (
+          columnIndex > thirdColumnIndex &&
+          columnIndex <= thirdColumnIndex + Number(newLink.repeatCount) - 1
+        ) {
+          newThirdItemValue = newThirdItemValue + currentColumn.value
+          return {
+            ...currentColumn,
+            isVisible: false,
+          }
+        }
+        return currentColumn
+      })
+      newLink.columns[thirdColumnIndex].value = newThirdItemValue
+    }
+
+    setLink({
+      ...newLink,
+    })
+  }
 
   return (
     <Grid container justify='space-between'>
@@ -105,52 +165,93 @@ export default function LinkComponent(props: LinkComponentProps) {
         />
       </Grid>
       <Grid item xs={7}>
-        <Typography variant='subtitle1'>Holes</Typography>
+        <Typography variant='subtitle1'>Horizontal Holes</Typography>
       </Grid>
       <Grid item xs={5}>
         <TextField
+          fullWidth
           type='number'
           value={link.holes}
+          InputProps={{ inputProps: { min: 0, max: 100 } }}
           onChange={event => {
-            setLink({
+            const newHoles = Number(event.target.value)
+
+            const newLink = {
               ...link,
-              holes: Number(event.target.value),
-            })
+              holes: newHoles,
+            }
+
+            if (newHoles > link.columns.length) {
+              for (
+                let index = 0;
+                index < newHoles - link.columns.length;
+                index++
+              ) {
+                newLink.columns.push(emptyColumn)
+              }
+            } else if (newHoles < link.columns.length) {
+              for (
+                let index = 0;
+                index < link.columns.length - newHoles;
+                index++
+              ) {
+                newLink.columns.pop()
+              }
+            }
+            setLink(newLink)
           }}
         />
       </Grid>
-      <Grid item xs={12}>
-        <Typography variant='subtitle1'>Column 1</Typography>
-      </Grid>
-      <Grid item xs={12}>
-        <Typography variant='subtitle1'>Column 2</Typography>
-      </Grid>
-      <Grid item xs={7}>
-        <Typography variant='subtitle1'>Column 3</Typography>
-      </Grid>
-      <Grid item xs={5}>
-        <TextField
-          type='number'
-          value={link.column3}
-          onChange={event => {
-            setLink({
-              ...link,
-              column3: Number(event.target.value),
-            })
-          }}
-        />
-      </Grid>
+
+      {link.columns.map(
+        (column, index) =>
+          index < 3 &&
+          index !== thirdColumnIndex &&
+          column.isVisible && (
+            <ColumnComponent
+              key={index}
+              column={column}
+              link={link}
+              index={index}
+              setLink={setLink}
+              thirdColumnIndex={thirdColumnIndex}
+              setThirdColumnIndex={setThirdColumnIndex}
+            />
+          )
+      )}
 
       <Grid item xs={12}>
         <Grid container justify='space-between'>
           <Grid item xs={2}></Grid>
           <Grid item xs={10} className={classes.subContainer}>
             <Grid container justify='space-between'>
-              <Grid item xs={12}>
-                <Typography variant='subtitle1'>Column 4-6</Typography>
-              </Grid>
-              <Grid item xs={12}>
+              {thirdColumnIndex !== -1 &&
+                link.columns.length > thirdColumnIndex && (
+                  <ColumnComponent
+                    column={link.columns[thirdColumnIndex]}
+                    link={link}
+                    index={thirdColumnIndex}
+                    setLink={setLink}
+                    thirdColumnIndex={thirdColumnIndex}
+                    setThirdColumnIndex={setThirdColumnIndex}
+                  />
+                )}
+              <Grid item xs={7}>
                 <Typography variant='subtitle1'>Rows</Typography>
+              </Grid>
+              <Grid item xs={5}>
+                {
+                  <SelectBox
+                    options={rowsNumberOptions}
+                    value={link.rowsNumber}
+                    onChange={(value: number) => {
+                      setLink({
+                        ...link,
+                        rowsNumber: value,
+                      })
+                    }}
+                  />
+                }
               </Grid>
               <Grid item xs={12}>
                 <Typography variant='subtitle1'>Row 1</Typography>
@@ -174,11 +275,12 @@ export default function LinkComponent(props: LinkComponentProps) {
                         newLinks.splice(index + 1, 0, {
                           positionOfFeet: 0,
                           holes: 0,
-                          column3: 0,
                           fittingType: 'Insulator',
                           terminationsSize: 'M10',
                           terminationsSpacing: '50mm',
-                          repeatCount: 0,
+                          repeatCount: 1,
+                          rowsNumber: 1,
+                          columns: [],
                         })
                         setLinks(newLinks)
                       } else {
@@ -213,32 +315,27 @@ export default function LinkComponent(props: LinkComponentProps) {
                 </Typography>
               </Grid>
               <Grid item xs={5}>
-                {
-                  <SelectBox
-                    options={terminationsSpacingOptions}
-                    value={link.terminationsSpacing}
-                    onChange={(value: string) => {
-                      setLink({
-                        ...link,
-                        terminationsSpacing: value,
-                      })
-                    }}
-                  />
-                }
+                <SelectBox
+                  options={terminationsSpacingOptions}
+                  value={link.terminationsSpacing}
+                  onChange={(value: string) => {
+                    setLink({
+                      ...link,
+                      terminationsSpacing: value,
+                    })
+                  }}
+                />
               </Grid>
 
               <Grid item xs={7}>
                 <Typography variant='subtitle1'>Repeat Count</Typography>
               </Grid>
               <Grid item xs={5}>
-                <TextField
-                  type='number'
+                <SelectBox
+                  options={[1, 2, 3]}
                   value={link.repeatCount}
-                  onChange={event => {
-                    setLink({
-                      ...link,
-                      repeatCount: Number(event.target.value),
-                    })
+                  onChange={(value: number) => {
+                    onChangeRepeatCount(link, Number(value))
                   }}
                 />
               </Grid>
@@ -247,9 +344,22 @@ export default function LinkComponent(props: LinkComponentProps) {
         </Grid>
       </Grid>
 
-      <Grid item xs={12}>
-        <Typography variant='subtitle1'>Column 7</Typography>
-      </Grid>
+      {link.columns.map(
+        (column, index) =>
+          index > 2 &&
+          index !== thirdColumnIndex &&
+          column.isVisible && (
+            <ColumnComponent
+              key={index}
+              column={column}
+              link={link}
+              index={index}
+              setLink={setLink}
+              thirdColumnIndex={thirdColumnIndex}
+              setThirdColumnIndex={setThirdColumnIndex}
+            />
+          )
+      )}
     </Grid>
   )
 }

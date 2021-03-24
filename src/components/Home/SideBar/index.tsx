@@ -44,11 +44,12 @@ export default function SideBar() {
     {
       positionOfFeet: 0,
       holes: 0,
-      column3: 0,
       fittingType: 'Insulator',
       terminationsSize: 'M10',
       terminationsSpacing: '50mm',
-      repeatCount: 0,
+      repeatCount: 1,
+      rowsNumber: 1,
+      columns: [],
     },
   ])
 
