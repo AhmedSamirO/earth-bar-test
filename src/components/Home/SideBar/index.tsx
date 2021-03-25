@@ -44,11 +44,6 @@ export default function SideBar() {
     {
       positionOfFeet: 0,
       holes: 0,
-      fittingType: 'Insulator',
-      terminationsSize: 'M10',
-      terminationsSpacing: '50mm',
-      repeatCount: 1,
-      rowsNumber: 1,
       columns: [],
     },
   ])
@@ -250,7 +245,7 @@ export default function SideBar() {
           className={classes.mainContainer}
           key={index}
         >
-          <LinkComponent index={index} links={links} setLinks={setLinks} />
+          <LinkComponent linkIndex={index} links={links} setLinks={setLinks} />
         </Grid>
       ))}
     </Grid>
