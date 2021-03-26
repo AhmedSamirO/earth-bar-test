@@ -54,6 +54,8 @@ export default function SideBar() {
           terminationsSize: 'M10',
           terminationsSpacing: '50mm',
           value: 0,
+          links: 'None',
+          linkType: 'Swing',
         },
         {
           fittingType: 'Insulator',
@@ -64,9 +66,12 @@ export default function SideBar() {
           terminationsSize: 'M10',
           terminationsSpacing: '50mm',
           value: 0,
+          links: 'None',
+          linkType: 'Swing',
         },
       ],
       linkIndex: 0,
+      quantity: 1,
     },
     {
       positionOfFeet: 0,
@@ -81,6 +86,8 @@ export default function SideBar() {
           terminationsSize: 'M10',
           terminationsSpacing: '50mm',
           value: 0,
+          links: 'None',
+          linkType: 'Swing',
         },
         {
           fittingType: 'Link',
@@ -91,9 +98,12 @@ export default function SideBar() {
           terminationsSize: 'M10',
           terminationsSpacing: '50mm',
           value: 0,
+          links: 'None',
+          linkType: 'Swing',
         },
       ],
       linkIndex: 1,
+      quantity: 1,
     },
     {
       positionOfFeet: 0,
@@ -108,12 +118,15 @@ export default function SideBar() {
           terminationsSize: 'M10',
           terminationsSpacing: '50mm',
           value: 0,
+          links: 'None',
+          linkType: 'Swing',
         },
       ],
       linkIndex: 2,
+      quantity: 1,
     },
-    { positionOfFeet: 0, holes: 0, columns: [], linkIndex: 3 },
-    { positionOfFeet: 0, holes: 0, columns: [], linkIndex: 4 },
+    { positionOfFeet: 0, holes: 0, columns: [], linkIndex: 3, quantity: 1 },
+    { positionOfFeet: 0, holes: 0, columns: [], linkIndex: 4, quantity: 1 },
   ])
 
   const baseMaterialOptions = [

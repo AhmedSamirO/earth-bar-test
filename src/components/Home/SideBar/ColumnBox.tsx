@@ -53,6 +53,16 @@ export default function ColumnBoxComponent(props: ColumnBoxComponentProps) {
     'Varying Spacings ',
   ]
 
+  const linksOptions = [
+    'None',
+    'Single Link',
+    'Twin Links',
+    'Multiple Links',
+    '90-degree link',
+  ]
+
+  const linkTypeOptions = ['Lift off', 'Slide off', 'Swing']
+
   const updateColumnValues = (
     link: LinkComponentType,
     updatedColumn: LinkColumnType
@@ -193,7 +203,6 @@ export default function ColumnBoxComponent(props: ColumnBoxComponentProps) {
         newLink => !removedLinksIndex.includes(newLink.linkIndex)
       )
 
-      console.log('1111', newLinks)
       setLinks(newLinks)
     }
   }
@@ -244,38 +253,68 @@ export default function ColumnBoxComponent(props: ColumnBoxComponentProps) {
             <Typography variant='subtitle1'>Fitting Type</Typography>
           </Grid>
           <Grid item xs={5}>
-            {
-              <SelectBox
-                options={fittingTypeOptions}
-                value={column.fittingType}
-                onChange={(value: string) => {
-                  let newColumn = { ...column, fittingType: value }
+            <SelectBox
+              options={fittingTypeOptions}
+              value={column.fittingType}
+              onChange={(value: string) => {
+                let newColumn = { ...column, fittingType: value }
 
-                  if (value === 'Link') {
-                    const newLinks = [...links]
-                    const newLinkIndex =
-                      newLinks[newLinks.length - 1].linkIndex + 1
-                    newLinks.push({
-                      positionOfFeet: 0,
-                      holes: 0,
-                      columns: [],
-                      linkIndex: newLinkIndex,
-                    })
-                    newColumn = {
-                      ...newColumn,
-                      linkIndex: newLinkIndex,
-                    }
-                    updateColumnValues(link, newColumn)
-
-                    console.log('ssss', newLinks)
-                    setLinks(newLinks)
-                  } else {
-                    removeColumnLinks(links, column.linkIndex, newColumn)
+                if (value === 'Link') {
+                  const newLinks = [...links]
+                  const newLinkIndex =
+                    newLinks[newLinks.length - 1].linkIndex + 1
+                  newLinks.push({
+                    positionOfFeet: 0,
+                    holes: 0,
+                    columns: [],
+                    linkIndex: newLinkIndex,
+                    quantity: 1,
+                  })
+                  newColumn = {
+                    ...newColumn,
+                    linkIndex: newLinkIndex,
                   }
-                }}
-              />
-            }
+                  updateColumnValues(link, newColumn)
+
+                  setLinks(newLinks)
+                } else {
+                  removeColumnLinks(links, column.linkIndex, newColumn)
+                }
+              }}
+            />
           </Grid>
+
+          {column.fittingType === 'Link' && (
+            <>
+              <Grid item xs={7}>
+                <Typography variant='subtitle1'>Links</Typography>
+              </Grid>
+              <Grid item xs={5}>
+                <SelectBox
+                  options={linksOptions}
+                  value={column.links}
+                  onChange={(value: string) => {
+                    const newColumn = { ...column, links: value }
+                    updateColumnValues(link, newColumn)
+                  }}
+                />
+              </Grid>
+
+              <Grid item xs={7}>
+                <Typography variant='subtitle1'>Link Type</Typography>
+              </Grid>
+              <Grid item xs={5}>
+                <SelectBox
+                  options={linkTypeOptions}
+                  value={column.linkType}
+                  onChange={(value: string) => {
+                    const newColumn = { ...column, linkType: value }
+                    updateColumnValues(link, newColumn)
+                  }}
+                />
+              </Grid>
+            </>
+          )}
 
           <Grid item xs={7}>
             <Typography variant='subtitle1'>Terminations Size</Typography>
