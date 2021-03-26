@@ -140,28 +140,6 @@ export default function ColumnBoxComponent(props: ColumnBoxComponentProps) {
         0,
         ...addedColumns
       )
-
-      /*
-        if this is last column and repeatCount is largest than the columns
-        we will add new columns
-        
-        - loop on the repeatCount - newColumn.groupedColumns.length
-          - add column and add number to newColumn.groupedColumns
-      */
-      /*
-      for (
-        let index = 0;
-        index < newColumn.repeatCount - newColumn.groupedColumns.length;
-        index++
-      ) {
-        const newColumnIndex =
-          newColumn.groupedColumns[newColumn.groupedColumns.length] + 1
-
-        newLink.holes += 1
-        // newColumn.groupedColumns.push(newColumnIndex)
-        console.log('holes 0', newLink.holes)
-      }
-      */
     } else if (repeatCount < column.repeatCount) {
       const removedColumns = newColumn.groupedColumns.splice(repeatCount)
 
@@ -182,15 +160,18 @@ export default function ColumnBoxComponent(props: ColumnBoxComponentProps) {
       })
     }
 
-    console.log('holes 2', newLink.holes)
+    let newHolesCount = 0
+
     newLink.columns = newLink.columns.map(linkColumn => {
+      newHolesCount += linkColumn.groupedColumns.length
+
       if (linkColumn.groupedColumns[0] === newColumn.groupedColumns[0]) {
         return { ...newColumn }
       }
       return { ...linkColumn }
     })
 
-    console.log('holes last', newLink.holes)
+    newLink.holes = newHolesCount
 
     setLink({
       ...newLink,
