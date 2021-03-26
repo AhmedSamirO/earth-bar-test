@@ -140,15 +140,39 @@ export default function ColumnBoxComponent(props: ColumnBoxComponentProps) {
         0,
         ...addedColumns
       )
+
+      /*
+        if this is last column and repeatCount is largest than the columns
+        we will add new columns
+        
+        - loop on the repeatCount - newColumn.groupedColumns.length
+          - add column and add number to newColumn.groupedColumns
+      */
+      /*
+      for (
+        let index = 0;
+        index < newColumn.repeatCount - newColumn.groupedColumns.length;
+        index++
+      ) {
+        const newColumnIndex =
+          newColumn.groupedColumns[newColumn.groupedColumns.length] + 1
+
+        newLink.holes += 1
+        // newColumn.groupedColumns.push(newColumnIndex)
+        console.log('holes 0', newLink.holes)
+      }
+      */
     } else if (repeatCount < column.repeatCount) {
       const removedColumns = newColumn.groupedColumns.splice(repeatCount)
-      console.log('2222', newColumn, removedColumns)
+
       removedColumns.forEach(columnIndex => {
         const newColumns = [...newLink.columns]
         newColumns.forEach((linkColumn, index) => {
-          if (linkColumn.groupedColumns[0] === columnIndex + 1) {
-            console.log('333', linkColumn.groupedColumns[0], columnIndex + 1)
-            newLink.columns.splice(index, 0, {
+          if (
+            linkColumn.groupedColumns[linkColumn.groupedColumns.length - 1] ===
+            columnIndex - 1
+          ) {
+            newLink.columns.splice(index + 1, 0, {
               ...newColumn,
               repeatCount: 1,
               groupedColumns: [columnIndex],
@@ -158,12 +182,15 @@ export default function ColumnBoxComponent(props: ColumnBoxComponentProps) {
       })
     }
 
+    console.log('holes 2', newLink.holes)
     newLink.columns = newLink.columns.map(linkColumn => {
       if (linkColumn.groupedColumns[0] === newColumn.groupedColumns[0]) {
         return { ...newColumn }
       }
       return { ...linkColumn }
     })
+
+    console.log('holes last', newLink.holes)
 
     setLink({
       ...newLink,
