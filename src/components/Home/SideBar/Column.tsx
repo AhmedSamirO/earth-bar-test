@@ -78,7 +78,6 @@ export default function ColumnComponent(props: ColumnComponentProps) {
           setLink={setLink}
           links={links}
           setLinks={setLinks}
-          linkIndex={linkIndex}
         />
       )}
     </>

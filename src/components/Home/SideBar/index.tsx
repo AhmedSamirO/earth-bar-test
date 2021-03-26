@@ -43,9 +43,77 @@ export default function SideBar() {
   const [links, setLinks] = useState<Array<LinkComponentType>>([
     {
       positionOfFeet: 0,
-      holes: 0,
-      columns: [],
+      holes: 2,
+      columns: [
+        {
+          fittingType: 'Link',
+          groupedColumns: [1],
+          linkIndex: 1,
+          repeatCount: 1,
+          rowsNumber: 1,
+          terminationsSize: 'M10',
+          terminationsSpacing: '50mm',
+          value: 0,
+        },
+        {
+          fittingType: 'Insulator',
+          groupedColumns: [2],
+          linkIndex: -1,
+          repeatCount: 1,
+          rowsNumber: 1,
+          terminationsSize: 'M10',
+          terminationsSpacing: '50mm',
+          value: 0,
+        },
+      ],
+      linkIndex: 0,
     },
+    {
+      positionOfFeet: 0,
+      holes: 2,
+      columns: [
+        {
+          fittingType: 'Link',
+          groupedColumns: [1],
+          linkIndex: 2,
+          repeatCount: 1,
+          rowsNumber: 1,
+          terminationsSize: 'M10',
+          terminationsSpacing: '50mm',
+          value: 0,
+        },
+        {
+          fittingType: 'Link',
+          groupedColumns: [2],
+          linkIndex: 3,
+          repeatCount: 1,
+          rowsNumber: 1,
+          terminationsSize: 'M10',
+          terminationsSpacing: '50mm',
+          value: 0,
+        },
+      ],
+      linkIndex: 1,
+    },
+    {
+      positionOfFeet: 0,
+      holes: 1,
+      columns: [
+        {
+          fittingType: 'Insulator',
+          groupedColumns: [1],
+          linkIndex: 4,
+          repeatCount: 1,
+          rowsNumber: 1,
+          terminationsSize: 'M10',
+          terminationsSpacing: '50mm',
+          value: 0,
+        },
+      ],
+      linkIndex: 2,
+    },
+    { positionOfFeet: 0, holes: 0, columns: [], linkIndex: 3 },
+    { positionOfFeet: 0, holes: 0, columns: [], linkIndex: 4 },
   ])
 
   const baseMaterialOptions = [
@@ -238,14 +306,18 @@ export default function SideBar() {
           />
         </Grid>
       </Grid>
-      {links.map((_, index) => (
+      {links.map(link => (
         <Grid
           container
           justify='space-between'
           className={classes.mainContainer}
-          key={index}
+          key={link.linkIndex}
         >
-          <LinkComponent linkIndex={index} links={links} setLinks={setLinks} />
+          <LinkComponent
+            linkIndex={link.linkIndex}
+            links={links}
+            setLinks={setLinks}
+          />
         </Grid>
       ))}
     </Grid>

@@ -20,13 +20,12 @@ declare type ColumnBoxComponentProps = {
   setLink: React.Dispatch<React.SetStateAction<LinkComponentType>>
   links: Array<LinkComponentType>
   setLinks: React.Dispatch<React.SetStateAction<Array<LinkComponentType>>>
-  linkIndex: number
 }
 
 export default function ColumnBoxComponent(props: ColumnBoxComponentProps) {
   const classes = useStyles()
 
-  const { column, link, setLink, links, setLinks, linkIndex } = props
+  const { column, link, setLink, links, setLinks } = props
 
   const rowsNumberOptions = [1, 2, 3]
 
@@ -178,6 +177,45 @@ export default function ColumnBoxComponent(props: ColumnBoxComponentProps) {
     })
   }
 
+  const removeColumnLinks = (
+    links: Array<LinkComponentType>,
+    linkIndex: number,
+    newColumn: LinkColumnType
+  ) => {
+    if (linkIndex !== -1) {
+      const removedLinksIndex = [linkIndex]
+      removedLinksIndex.push(...removeLink(links, linkIndex))
+
+      newColumn = { ...newColumn, linkIndex: -1 }
+      updateColumnValues(link, newColumn)
+
+      const newLinks = links.filter(
+        newLink => !removedLinksIndex.includes(newLink.linkIndex)
+      )
+
+      console.log('1111', newLinks)
+      setLinks(newLinks)
+    }
+  }
+
+  const removeLink = (links: Array<LinkComponentType>, linkIndex: number) => {
+    const removedLink = links.filter(
+      newLink => newLink.linkIndex === linkIndex
+    )[0]
+
+    let newLinks = [...links]
+
+    const removedLinksIndex: number[] = []
+
+    removedLink.columns.forEach(removedLinkColumn => {
+      if (removedLinkColumn.linkIndex !== -1) {
+        removedLinksIndex.push(removedLinkColumn.linkIndex)
+        removeLink(newLinks, removedLinkColumn.linkIndex)
+      }
+    })
+    return removedLinksIndex
+  }
+
   return (
     <Grid container justify='space-between'>
       <Grid item xs={2}></Grid>
@@ -211,19 +249,28 @@ export default function ColumnBoxComponent(props: ColumnBoxComponentProps) {
                 options={fittingTypeOptions}
                 value={column.fittingType}
                 onChange={(value: string) => {
-                  const newColumn = { ...column, fittingType: value }
-                  updateColumnValues(link, newColumn)
+                  let newColumn = { ...column, fittingType: value }
 
                   if (value === 'Link') {
                     const newLinks = [...links]
-                    newLinks.splice(linkIndex + 1, 0, {
+                    const newLinkIndex =
+                      newLinks[newLinks.length - 1].linkIndex + 1
+                    newLinks.push({
                       positionOfFeet: 0,
                       holes: 0,
                       columns: [],
+                      linkIndex: newLinkIndex,
                     })
+                    newColumn = {
+                      ...newColumn,
+                      linkIndex: newLinkIndex,
+                    }
+                    updateColumnValues(link, newColumn)
+
+                    console.log('ssss', newLinks)
                     setLinks(newLinks)
                   } else {
-                    setLinks(links.splice(0, linkIndex + 1))
+                    removeColumnLinks(links, column.linkIndex, newColumn)
                   }
                 }}
               />

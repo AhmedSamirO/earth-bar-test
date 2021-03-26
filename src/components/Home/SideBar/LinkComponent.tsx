@@ -10,12 +10,14 @@ export declare type LinkColumnType = {
   terminationsSpacing: string
   repeatCount: number
   rowsNumber: number
+  linkIndex: number
 }
 
 export declare type LinkComponentType = {
   positionOfFeet: number
   holes: number
   columns: LinkColumnType[]
+  linkIndex: number
 }
 
 declare type LinkComponentProps = {
@@ -31,6 +33,7 @@ export default function LinkComponent(props: LinkComponentProps) {
     positionOfFeet: 0,
     holes: 0,
     columns: [],
+    linkIndex: -1,
   })
 
   const [firstTime, setFirstTime] = useState(true)
@@ -43,21 +46,34 @@ export default function LinkComponent(props: LinkComponentProps) {
     terminationsSpacing: '50mm',
     repeatCount: 1,
     rowsNumber: 1,
+    linkIndex: -1,
   }
 
   const [thirdColumnFirstIndex, setThirdColumnFirstIndex] = useState(-1)
 
   useEffect(() => {
-    const newLinks = [...links]
-    newLinks[linkIndex] = link
+    if (!firstTime) {
+      const newLinks = [
+        ...links.map(currentLink => {
+          if (currentLink.linkIndex === linkIndex) {
+            return { ...link }
+          }
+          return { ...currentLink }
+        }),
+      ]
 
-    setLinks(newLinks)
+      console.log('aaaa', newLinks, linkIndex)
+      setLinks(newLinks.filter(link => link !== undefined))
+    }
   }, [link])
 
   useEffect(() => {
     if (firstTime) {
       setFirstTime(false)
-      setLink(links[linkIndex])
+      const newLink = {
+        ...links.filter(link => link.linkIndex === linkIndex)[0],
+      }
+      setLink(newLink)
     }
   }, [links])
 
