@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Grid, TextField, Typography } from '@material-ui/core'
+import { Button, Grid, TextField, Typography } from '@material-ui/core'
 import ColumnComponent from './Column'
 
 export declare type LinkColumnType = {
@@ -56,6 +56,29 @@ export default function LinkComponent(props: LinkComponentProps) {
   }
 
   const [thirdColumnFirstIndex, setThirdColumnFirstIndex] = useState(-1)
+
+  const increaseHorizontalHolesNumber = (
+    link: LinkComponentType,
+    newHoles: number
+  ) => {
+    const newLink = {
+      ...link,
+      holes: newHoles,
+    }
+
+    const lastColumnGroupedColumns =
+      newLink.columns[newLink.columns.length - 1]?.groupedColumns
+    const lastIndex = lastColumnGroupedColumns?.length
+      ? lastColumnGroupedColumns[lastColumnGroupedColumns.length - 1]
+      : 0
+
+    newLink.columns.push({
+      ...emptyColumn,
+      groupedColumns: [Number(lastIndex) + 1],
+    })
+
+    setLink(newLink)
+  }
 
   useEffect(() => {
     if (!firstTime) {
@@ -124,6 +147,8 @@ export default function LinkComponent(props: LinkComponentProps) {
           }}
         />
       </Grid>
+
+      {/*
       <Grid item xs={7}>
         <Typography variant='subtitle1'>Horizontal Holes</Typography>
       </Grid>
@@ -165,6 +190,7 @@ export default function LinkComponent(props: LinkComponentProps) {
           }}
         />
       </Grid>
+      */}
 
       {link.columns.map((column, index) => (
         <ColumnComponent
@@ -180,6 +206,19 @@ export default function LinkComponent(props: LinkComponentProps) {
           linkIndex={linkIndex}
         />
       ))}
+
+      <Grid item xs={12}>
+        <Button
+          variant='contained'
+          color='primary'
+          onClick={() => {
+            increaseHorizontalHolesNumber(link, link.holes + 1)
+          }}
+          fullWidth
+        >
+          Add Horizontal Hole
+        </Button>
+      </Grid>
     </Grid>
   )
 }

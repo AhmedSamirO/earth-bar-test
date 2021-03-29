@@ -1,5 +1,5 @@
 import React from 'react'
-import { Grid, Typography } from '@material-ui/core'
+import { Grid, TextField, Typography } from '@material-ui/core'
 import SelectBox from '../../shared/SelectBox'
 import { makeStyles } from '@material-ui/core/styles'
 import { LinkColumnType, LinkComponentType } from './LinkComponent'
@@ -350,11 +350,13 @@ export default function ColumnBoxComponent(props: ColumnBoxComponentProps) {
             <Typography variant='subtitle1'>Repeat Count</Typography>
           </Grid>
           <Grid item xs={5}>
-            <SelectBox
-              options={[1, 2, 3]}
+            <TextField
+              type='number'
               value={column.repeatCount}
-              onChange={(value: number) => {
-                onChangeRepeatCount(link, column, Number(value))
+              InputProps={{ inputProps: { min: 0, max: 20 } }}
+              fullWidth
+              onChange={event => {
+                onChangeRepeatCount(link, column, Number(event.target.value))
               }}
             />
           </Grid>

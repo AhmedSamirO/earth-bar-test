@@ -1,8 +1,9 @@
 import { Grid, IconButton, TextField, Typography } from '@material-ui/core'
 import React from 'react'
 import { LinkColumnType, LinkComponentType } from './LinkComponent'
-import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos'
 import ColumnBoxComponent from './ColumnBox'
+import ChevronRightIcon from '@material-ui/icons/ChevronRight'
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 
 declare type ColumnComponentProps = {
   column: LinkColumnType
@@ -37,38 +38,43 @@ export default function ColumnComponent(props: ColumnComponentProps) {
     <>
       <Grid item xs={12}>
         <Grid container justify='space-between'>
-          <Grid item xs={7}>
+          <Grid item xs={12}>
             <Typography variant='subtitle1'>
               Column {column.groupedColumns[0]}
               {column.groupedColumns.length > 1 &&
                 `-${column.groupedColumns[column.groupedColumns.length - 1]}`}
               <IconButton
-                aria-label='ArrowForwardIosIcon'
                 size='small'
                 color='inherit'
                 onClick={() => {
                   viewThirdBox(column)
                 }}
               >
-                <ArrowForwardIosIcon />
+                {thirdColumnFirstIndex === column.groupedColumns[0] ? (
+                  <ExpandMoreIcon />
+                ) : (
+                  <ChevronRightIcon />
+                )}
               </IconButton>
             </Typography>
           </Grid>
-          <Grid item xs={5}>
-            <TextField
-              type='number'
-              value={column.value}
-              InputProps={{ inputProps: { min: 0 } }}
-              onChange={event => {
-                const newColumns = [...link.columns]
-                newColumns[index].value = Number(event.target.value)
-                setLink({
-                  ...link,
-                  columns: newColumns,
-                })
-              }}
-            />
-          </Grid>
+          {/*
+            <Grid item xs={5}>
+              <TextField
+                type='number'
+                value={column.value}
+                InputProps={{ inputProps: { min: 0 } }}
+                onChange={event => {
+                  const newColumns = [...link.columns]
+                  newColumns[index].value = Number(event.target.value)
+                  setLink({
+                    ...link,
+                    columns: newColumns,
+                  })
+                }}
+              />
+            </Grid>
+          */}
         </Grid>
       </Grid>
       {thirdColumnFirstIndex === column.groupedColumns[0] && (
