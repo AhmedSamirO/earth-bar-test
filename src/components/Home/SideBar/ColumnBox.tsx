@@ -234,9 +234,10 @@ export default function ColumnBoxComponent(props: ColumnBoxComponentProps) {
           </Grid>
           <Grid item xs={5}>
             <TextField
+              fullWidth
               type='number'
               value={column.rowsNumber}
-              InputProps={{ inputProps: { min: 0, max: 20 } }}
+              InputProps={{ inputProps: { min: 0, max: 3 } }}
               onChange={event => {
                 changeColumnRowsNumber(column, Number(event.target.value))
               }}
