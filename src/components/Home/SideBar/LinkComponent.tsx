@@ -2,17 +2,21 @@ import React, { useEffect, useState } from 'react'
 import { Button, Grid, TextField, Typography } from '@material-ui/core'
 import ColumnComponent from './Column'
 
-export declare type LinkColumnType = {
-  value: number
-  groupedColumns: number[]
+export declare type ColumnRowType = {
   fittingType: string
   terminationsSize: string
   terminationsSpacing: string
-  repeatCount: number
-  rowsNumber: number
   linkIndex: number
   links: string
   linkType: string
+}
+
+export declare type LinkColumnType = {
+  value: number
+  groupedColumns: number[]
+  rowsNumber: number
+  rows: ColumnRowType[]
+  repeatCount: number
 }
 
 export declare type LinkComponentType = {
@@ -27,6 +31,15 @@ declare type LinkComponentProps = {
   linkIndex: number
   links: Array<LinkComponentType>
   setLinks: React.Dispatch<React.SetStateAction<Array<LinkComponentType>>>
+}
+
+export const emptyRow: ColumnRowType = {
+  fittingType: 'Insulator',
+  terminationsSize: 'M10',
+  terminationsSpacing: '50mm',
+  linkIndex: -1,
+  links: 'None',
+  linkType: 'Swing',
 }
 
 export default function LinkComponent(props: LinkComponentProps) {
@@ -45,14 +58,9 @@ export default function LinkComponent(props: LinkComponentProps) {
   const emptyColumn: LinkColumnType = {
     value: 0,
     groupedColumns: [],
-    fittingType: 'Insulator',
-    terminationsSize: 'M10',
-    terminationsSpacing: '50mm',
-    repeatCount: 1,
     rowsNumber: 1,
-    linkIndex: -1,
-    links: 'None',
-    linkType: 'Swing',
+    repeatCount: 1,
+    rows: [{ ...emptyRow }],
   }
 
   const [thirdColumnFirstIndex, setThirdColumnFirstIndex] = useState(-1)

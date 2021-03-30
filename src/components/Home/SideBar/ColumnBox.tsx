@@ -2,7 +2,13 @@ import React from 'react'
 import { Grid, TextField, Typography } from '@material-ui/core'
 import SelectBox from '../../shared/SelectBox'
 import { makeStyles } from '@material-ui/core/styles'
-import { LinkColumnType, LinkComponentType } from './LinkComponent'
+import {
+  ColumnRowType,
+  emptyRow,
+  LinkColumnType,
+  LinkComponentType,
+} from './LinkComponent'
+import RowBoxComponent from './ColumnRowBox'
 
 const useStyles = makeStyles({
   subContainer: {
@@ -28,40 +34,6 @@ export default function ColumnBoxComponent(props: ColumnBoxComponentProps) {
   const { column, link, setLink, links, setLinks } = props
 
   const rowsNumberOptions = [1, 2, 3]
-
-  const fittingTypeOptions = ['Link', 'Insulator', 'Termination']
-  const terminationsSizeOptions = [
-    'M4',
-    'M6',
-    'M8',
-    'M10',
-    'M12',
-    'M16',
-    'M18',
-    'M20',
-    'M22',
-  ]
-
-  const terminationsSpacingOptions = [
-    '10mm',
-    '20mm',
-    '30mm',
-    '40mm',
-    '50mm',
-    '60mm',
-    '70mm',
-    'Varying Spacings ',
-  ]
-
-  const linksOptions = [
-    'None',
-    'Single Link',
-    'Twin Links',
-    'Multiple Links',
-    '90-degree link',
-  ]
-
-  const linkTypeOptions = ['Lift off', 'Slide off', 'Swing']
 
   const updateColumnValues = (
     link: LinkComponentType,
@@ -187,17 +159,41 @@ export default function ColumnBoxComponent(props: ColumnBoxComponentProps) {
     })
   }
 
-  const removeColumnLinks = (
+  const changeColumnRowsNumber = (
+    column: LinkColumnType,
+    newRowsNumber: number
+  ) => {
+    /*
+      1- if the number is more than the current one add new row
+      2- if less remove row and its links 
+    */
+    let newColumn = {
+      ...column,
+      rowsNumber: newRowsNumber,
+    }
+
+    if (newRowsNumber > column.rowsNumber) {
+      for (let index = 0; index < newRowsNumber - column.rowsNumber; index++) {
+        newColumn.rows.push(emptyRow)
+      }
+    } else if (newRowsNumber < column.rowsNumber) {
+      for (let index = 0; index < column.rowsNumber - newRowsNumber; index++) {
+        const removedRow = newColumn.rows.pop()
+        if (removedRow) {
+          removeRowLinks(links, removedRow.linkIndex)
+        }
+      }
+    }
+    updateColumnValues(link, newColumn)
+  }
+
+  const removeRowLinks = (
     links: Array<LinkComponentType>,
-    linkIndex: number,
-    newColumn: LinkColumnType
+    linkIndex: number
   ) => {
     if (linkIndex !== -1) {
       const removedLinksIndex = [linkIndex]
-      removedLinksIndex.push(...removeLink(links, linkIndex))
-
-      newColumn = { ...newColumn, linkIndex: -1 }
-      updateColumnValues(link, newColumn)
+      removeLink(links, linkIndex, removedLinksIndex)
 
       const newLinks = links.filter(
         newLink => !removedLinksIndex.includes(newLink.linkIndex)
@@ -207,22 +203,25 @@ export default function ColumnBoxComponent(props: ColumnBoxComponentProps) {
     }
   }
 
-  const removeLink = (links: Array<LinkComponentType>, linkIndex: number) => {
+  const removeLink = (
+    links: Array<LinkComponentType>,
+    linkIndex: number,
+    removedLinksIndexes: number[]
+  ) => {
     const removedLink = links.filter(
       newLink => newLink.linkIndex === linkIndex
     )[0]
 
     let newLinks = [...links]
 
-    const removedLinksIndex: number[] = []
-
     removedLink.columns.forEach(removedLinkColumn => {
-      if (removedLinkColumn.linkIndex !== -1) {
-        removedLinksIndex.push(removedLinkColumn.linkIndex)
-        removeLink(newLinks, removedLinkColumn.linkIndex)
-      }
+      removedLinkColumn.rows.forEach(removedColumnRow => {
+        if (removedColumnRow.linkIndex !== -1) {
+          removedLinksIndexes.push(removedColumnRow.linkIndex)
+          removeLink(newLinks, removedColumnRow.linkIndex, removedLinksIndexes)
+        }
+      })
     })
-    return removedLinksIndex
   }
 
   return (
@@ -234,118 +233,15 @@ export default function ColumnBoxComponent(props: ColumnBoxComponentProps) {
             <Typography variant='subtitle1'>Rows</Typography>
           </Grid>
           <Grid item xs={5}>
-            {
-              <SelectBox
-                options={rowsNumberOptions}
-                value={column.rowsNumber}
-                onChange={(value: number) => {
-                  const newColumn = { ...column, rowsNumber: Number(value) }
-                  updateColumnValues(link, newColumn)
-                }}
-              />
-            }
-          </Grid>
-          <Grid item xs={12}>
-            <Typography variant='subtitle1'>Row 1</Typography>
-          </Grid>
-
-          <Grid item xs={7}>
-            <Typography variant='subtitle1'>Fitting Type</Typography>
-          </Grid>
-          <Grid item xs={5}>
-            <SelectBox
-              options={fittingTypeOptions}
-              value={column.fittingType}
-              onChange={(value: string) => {
-                let newColumn = { ...column, fittingType: value }
-
-                if (value === 'Link') {
-                  const newLinks = [...links]
-                  const newLinkIndex =
-                    newLinks[newLinks.length - 1].linkIndex + 1
-                  newLinks.push({
-                    positionOfFeet: 0,
-                    holes: 0,
-                    columns: [],
-                    linkIndex: newLinkIndex,
-                    quantity: 1,
-                  })
-                  newColumn = {
-                    ...newColumn,
-                    linkIndex: newLinkIndex,
-                  }
-                  updateColumnValues(link, newColumn)
-
-                  setLinks(newLinks)
-                } else {
-                  removeColumnLinks(links, column.linkIndex, newColumn)
-                }
+            <TextField
+              type='number'
+              value={column.rowsNumber}
+              InputProps={{ inputProps: { min: 0, max: 20 } }}
+              onChange={event => {
+                changeColumnRowsNumber(column, Number(event.target.value))
               }}
             />
           </Grid>
-
-          {column.fittingType === 'Link' && (
-            <>
-              <Grid item xs={7}>
-                <Typography variant='subtitle1'>Links</Typography>
-              </Grid>
-              <Grid item xs={5}>
-                <SelectBox
-                  options={linksOptions}
-                  value={column.links}
-                  onChange={(value: string) => {
-                    const newColumn = { ...column, links: value }
-                    updateColumnValues(link, newColumn)
-                  }}
-                />
-              </Grid>
-
-              <Grid item xs={7}>
-                <Typography variant='subtitle1'>Link Type</Typography>
-              </Grid>
-              <Grid item xs={5}>
-                <SelectBox
-                  options={linkTypeOptions}
-                  value={column.linkType}
-                  onChange={(value: string) => {
-                    const newColumn = { ...column, linkType: value }
-                    updateColumnValues(link, newColumn)
-                  }}
-                />
-              </Grid>
-            </>
-          )}
-
-          <Grid item xs={7}>
-            <Typography variant='subtitle1'>Terminations Size</Typography>
-          </Grid>
-          <Grid item xs={5}>
-            {
-              <SelectBox
-                options={terminationsSizeOptions}
-                value={column.terminationsSize}
-                onChange={(value: string) => {
-                  const newColumn = { ...column, terminationsSize: value }
-                  updateColumnValues(link, newColumn)
-                }}
-              />
-            }
-          </Grid>
-
-          <Grid item xs={7}>
-            <Typography variant='subtitle1'>Terminations Spacing</Typography>
-          </Grid>
-          <Grid item xs={5}>
-            <SelectBox
-              options={terminationsSpacingOptions}
-              value={column.terminationsSpacing}
-              onChange={(value: string) => {
-                const newColumn = { ...column, terminationsSpacing: value }
-                updateColumnValues(link, newColumn)
-              }}
-            />
-          </Grid>
-
           <Grid item xs={7}>
             <Typography variant='subtitle1'>Repeat Count</Typography>
           </Grid>
@@ -360,6 +256,20 @@ export default function ColumnBoxComponent(props: ColumnBoxComponentProps) {
               }}
             />
           </Grid>
+
+          {column.rows.map((row, index) => (
+            <RowBoxComponent
+              key={index}
+              row={row}
+              link={link}
+              setLink={setLink}
+              links={links}
+              setLinks={setLinks}
+              columnFirstIndex={column.groupedColumns[0]}
+              rowIndex={index}
+              removeLink={removeLink}
+            />
+          ))}
         </Grid>
       </Grid>
     </Grid>
