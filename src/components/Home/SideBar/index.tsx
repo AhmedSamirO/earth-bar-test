@@ -6,7 +6,7 @@ import SelectBox from '../../shared/SelectBox'
 
 const useStyles = makeStyles({
   root: {
-    maxHeight: '100vh',
+    maxHeight: '99vh',
     overflowX: 'hidden',
     overflowY: 'auto',
   },
