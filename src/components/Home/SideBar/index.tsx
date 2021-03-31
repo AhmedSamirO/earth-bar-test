@@ -6,14 +6,14 @@ import SelectBox from '../../shared/SelectBox'
 
 const useStyles = makeStyles({
   root: {
-    height: '100vh',
+    maxHeight: '100vh',
     overflowX: 'hidden',
     overflowY: 'auto',
   },
   button: {
     height: 40,
-    marginBottom: 30,
     fontSize: 12,
+    marginBottom: 30,
   },
   mainContainer: {
     border: 'solid 2px black',
@@ -87,7 +87,7 @@ export default function SideBar() {
     'Nickel Plated Phosphor Bronze – (non-compliant)',
   ]
   return (
-    <Grid container justify='space-between' className={classes.root}>
+    <Grid container className={classes.root}>
       <Grid container justify='space-between' spacing={2}>
         <Grid item xs={6}>
           <Button

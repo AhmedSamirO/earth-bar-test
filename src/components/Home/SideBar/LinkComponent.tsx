@@ -85,6 +85,8 @@ export default function LinkComponent(props: LinkComponentProps) {
       groupedColumns: [Number(lastIndex) + 1],
     })
 
+    setThirdColumnFirstIndex(Number(lastIndex) + 1)
+
     setLink(newLink)
   }
 
