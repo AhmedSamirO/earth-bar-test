@@ -158,62 +158,16 @@ export default function LinkComponent(props: LinkComponentProps) {
         />
       </Grid>
 
-      {/*
-      <Grid item xs={7}>
-        <Typography variant='subtitle1'>Horizontal Holes</Typography>
-      </Grid>
-      <Grid item xs={5}>
-        <TextField
-          fullWidth
-          type='number'
-          value={link.holes}
-          InputProps={{ inputProps: { min: 0, max: 100 } }}
-          onChange={event => {
-            const newHoles = Number(event.target.value)
-
-            const newLink = {
-              ...link,
-              holes: newHoles,
-            }
-
-            if (newHoles > link.columns.length) {
-              const lastColumnGroupedColumns =
-                newLink.columns[newLink.columns.length - 1]?.groupedColumns
-              const lastIndex = lastColumnGroupedColumns?.length
-                ? lastColumnGroupedColumns[lastColumnGroupedColumns.length - 1]
-                : 0
-
-              newLink.columns.push({
-                ...emptyColumn,
-                groupedColumns: [Number(lastIndex) + 1],
-              })
-            } else if (newHoles < link.columns.length) {
-              const lastColumnGroupedColumns =
-                newLink.columns[newLink.columns.length - 1].groupedColumns
-              if (lastColumnGroupedColumns.length === 1) {
-                newLink.columns.pop()
-              } else {
-                newLink.columns[newLink.columns.length - 1].groupedColumns.pop()
-              }
-            }
-            setLink(newLink)
-          }}
-        />
-      </Grid>
-      */}
-
       {link.columns.map((column, index) => (
         <ColumnComponent
           key={index}
           column={column}
           link={link}
-          index={index}
           setLink={setLink}
           thirdColumnFirstIndex={thirdColumnFirstIndex}
           setThirdColumnFirstIndex={setThirdColumnFirstIndex}
           links={links}
           setLinks={setLinks}
-          linkIndex={linkIndex}
         />
       ))}
 

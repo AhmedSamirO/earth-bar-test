@@ -1,13 +1,7 @@
 import React from 'react'
-import { Grid, TextField, Typography } from '@material-ui/core'
-import SelectBox from '../../shared/SelectBox'
+import { Button, Grid, TextField, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
-import {
-  ColumnRowType,
-  emptyRow,
-  LinkColumnType,
-  LinkComponentType,
-} from './LinkComponent'
+import { emptyRow, LinkColumnType, LinkComponentType } from './LinkComponent'
 import RowBoxComponent from './ColumnRowBox'
 
 const useStyles = makeStyles({
@@ -17,6 +11,12 @@ const useStyles = makeStyles({
     padding: 10,
     marginBottom: 20,
     marginTop: 20,
+  },
+  deleteButton: {
+    backgroundColor: 'red',
+    color: 'white',
+    marginTop: 20,
+    fontSize: 16,
   },
 })
 
@@ -32,8 +32,6 @@ export default function ColumnBoxComponent(props: ColumnBoxComponentProps) {
   const classes = useStyles()
 
   const { column, link, setLink, links, setLinks } = props
-
-  const rowsNumberOptions = [1, 2, 3]
 
   const updateColumnValues = (
     link: LinkComponentType,
@@ -59,24 +57,6 @@ export default function ColumnBoxComponent(props: ColumnBoxComponentProps) {
   ) => {
     const newLink = { ...link }
     const newColumn = { ...column, repeatCount }
-
-    /*
-      1- repeatCount is increased
-      
-        - add the new numbers to groupedColumns
-      
-        if the needed one not grouped
-          - get the value for the new ones and add it to current value
-          - remove the columns
-        
-        - else
-          - remove the columns from the old group
-          - get the value for the new ones and add it to current value
-      
-      2- repeatCount is decreased
-        - remove the columns from the last of groupedColumns and set them as new columns
-        - set them with the current grouped column values
-    */
 
     if (repeatCount > column.repeatCount) {
       const newAddedCount = repeatCount - column.repeatCount
@@ -224,6 +204,15 @@ export default function ColumnBoxComponent(props: ColumnBoxComponentProps) {
     })
   }
 
+  const removeColumn = (link: LinkComponentType, column: LinkColumnType) => {
+    const newLink = { ...link }
+    newLink.columns = newLink.columns.filter(
+      linkColumn => linkColumn.groupedColumns[0] !== column.groupedColumns[0]
+    )
+
+    setLink(newLink)
+  }
+
   return (
     <Grid container justify='space-between'>
       <Grid item xs={2}></Grid>
@@ -250,7 +239,7 @@ export default function ColumnBoxComponent(props: ColumnBoxComponentProps) {
             <TextField
               type='number'
               value={column.repeatCount}
-              InputProps={{ inputProps: { min: 0, max: 20 } }}
+              InputProps={{ inputProps: { min: 1, max: 20 } }}
               fullWidth
               onChange={event => {
                 onChangeRepeatCount(link, column, Number(event.target.value))
@@ -271,6 +260,19 @@ export default function ColumnBoxComponent(props: ColumnBoxComponentProps) {
               removeLink={removeLink}
             />
           ))}
+
+          <Grid item xs={12}>
+            <Button
+              className={classes.deleteButton}
+              variant='contained'
+              onClick={() => {
+                removeColumn(link, column)
+              }}
+              fullWidth
+            >
+              Delete Column
+            </Button>
+          </Grid>
         </Grid>
       </Grid>
     </Grid>

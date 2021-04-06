@@ -1,18 +1,7 @@
 import React from 'react'
 import { Grid, Typography } from '@material-ui/core'
 import SelectBox from '../../shared/SelectBox'
-import { makeStyles } from '@material-ui/core/styles'
 import { LinkComponentType, ColumnRowType } from './LinkComponent'
-
-const useStyles = makeStyles({
-  subContainer: {
-    border: 'solid 2px black',
-    borderRadius: 3,
-    padding: 10,
-    marginBottom: 20,
-    marginTop: 20,
-  },
-})
 
 declare type RowBoxComponentProps = {
   row: ColumnRowType
@@ -26,8 +15,6 @@ declare type RowBoxComponentProps = {
 }
 
 export default function RowBoxComponent(props: RowBoxComponentProps) {
-  const classes = useStyles()
-
   const {
     row,
     link,
