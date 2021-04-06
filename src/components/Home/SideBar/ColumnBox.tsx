@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, Grid, TextField, Typography } from '@material-ui/core'
+import { Button, Grid, Modal, TextField, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import { emptyRow, LinkColumnType, LinkComponentType } from './LinkComponent'
 import RowBoxComponent from './ColumnRowBox'
@@ -18,6 +18,23 @@ const useStyles = makeStyles({
     marginTop: 20,
     fontSize: 16,
   },
+  deleteConfirmButton: {
+    backgroundColor: 'red',
+    color: 'white',
+    fontSize: 16,
+  },
+  paper: {
+    position: 'absolute',
+    width: 400,
+    border: '1px solid #000',
+    boxShadow: '0px 0px 20px #333',
+    top: '35%',
+    left: '35%',
+    backgroundColor: '#fff',
+    fontSize: 18,
+    textAlign: 'center',
+    borderRadius: 5,
+  },
 })
 
 declare type ColumnBoxComponentProps = {
@@ -32,6 +49,24 @@ export default function ColumnBoxComponent(props: ColumnBoxComponentProps) {
   const classes = useStyles()
 
   const { column, link, setLink, links, setLinks } = props
+
+  const [open, setOpen] = React.useState(false)
+
+  const handleOpen = () => {
+    setOpen(true)
+  }
+
+  const handleClose = () => {
+    setOpen(false)
+  }
+
+  function getModalStyle() {
+    return {
+      top: '50%',
+      left: '50%',
+      transform: `translate(-50%, -50%)`,
+    }
+  }
 
   const updateColumnValues = (
     link: LinkComponentType,
@@ -204,11 +239,21 @@ export default function ColumnBoxComponent(props: ColumnBoxComponentProps) {
     })
   }
 
-  const removeColumn = (link: LinkComponentType, column: LinkColumnType) => {
+  const removeColumn = (
+    links: Array<LinkComponentType>,
+    link: LinkComponentType,
+    column: LinkColumnType
+  ) => {
     const newLink = { ...link }
+    const newColumn = { ...column }
+
     newLink.columns = newLink.columns.filter(
       linkColumn => linkColumn.groupedColumns[0] !== column.groupedColumns[0]
     )
+
+    column.rows.map(row => {
+      removeRowLinks(links, row.linkIndex)
+    })
 
     setLink(newLink)
   }
@@ -266,13 +311,53 @@ export default function ColumnBoxComponent(props: ColumnBoxComponentProps) {
               className={classes.deleteButton}
               variant='contained'
               onClick={() => {
-                removeColumn(link, column)
+                // removeColumn(links, link, column)
+                handleOpen()
               }}
               fullWidth
             >
               Delete Column
             </Button>
           </Grid>
+
+          <Modal open={open} onClose={handleClose}>
+            <Grid
+              container
+              justify='space-between'
+              className={classes.paper}
+              spacing={2}
+            >
+              <Grid item xs={12}>
+                <p>
+                  this will delete links attached to this column. do you wish to
+                  proceed?
+                </p>
+              </Grid>
+              <Grid item xs={6}>
+                <Button
+                  className={classes.deleteConfirmButton}
+                  variant='contained'
+                  onClick={() => {
+                    removeColumn(links, link, column)
+                  }}
+                  fullWidth
+                >
+                  Delete
+                </Button>
+              </Grid>
+              <Grid item xs={6}>
+                <Button
+                  variant='outlined'
+                  onClick={() => {
+                    handleClose()
+                  }}
+                  fullWidth
+                >
+                  Cancel
+                </Button>
+              </Grid>
+            </Grid>
+          </Modal>
         </Grid>
       </Grid>
     </Grid>
