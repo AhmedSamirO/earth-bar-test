@@ -246,16 +246,30 @@ export default function ColumnBoxComponent(props: ColumnBoxComponentProps) {
   ) => {
     const newLink = { ...link }
     const newColumn = { ...column }
+    const firstColumn = column.groupedColumns[0]
+    const deletedGroupedColumnsNumber = column.groupedColumns.length
 
     newLink.columns = newLink.columns.filter(
-      linkColumn => linkColumn.groupedColumns[0] !== column.groupedColumns[0]
+      linkColumn => linkColumn.groupedColumns[0] !== firstColumn
     )
+
+    newLink.columns = newLink.columns.map(linkColumn => {
+      if (linkColumn.groupedColumns[0] > firstColumn) {
+        linkColumn.groupedColumns = linkColumn.groupedColumns.map(
+          groupedColumn => groupedColumn - deletedGroupedColumnsNumber
+        )
+      }
+      return linkColumn
+    })
+
+    console.log('ttttt', newLink.columns)
 
     column.rows.map(row => {
       removeRowLinks(links, row.linkIndex)
     })
 
     setLink(newLink)
+    handleClose()
   }
 
   return (
