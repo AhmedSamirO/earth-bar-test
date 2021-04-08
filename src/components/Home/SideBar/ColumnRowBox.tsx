@@ -99,6 +99,8 @@ export default function RowBoxComponent(props: RowBoxComponentProps) {
       )
 
       setLinks(newLinks)
+    } else {
+      updateRowValues(link, newRow, columnFirstIndex, rowIndex)
     }
   }
 
