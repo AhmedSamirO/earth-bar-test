@@ -125,7 +125,6 @@ export default function RowBoxComponent(props: RowBoxComponentProps) {
                 holes: 0,
                 columns: [],
                 linkIndex: newLinkIndex,
-                quantity: 1,
               })
               newRow = {
                 ...newRow,

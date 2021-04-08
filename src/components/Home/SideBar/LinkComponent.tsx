@@ -24,7 +24,6 @@ export declare type LinkComponentType = {
   holes: number
   columns: LinkColumnType[]
   linkIndex: number
-  quantity: number
 }
 
 declare type LinkComponentProps = {
@@ -50,7 +49,6 @@ export default function LinkComponent(props: LinkComponentProps) {
     holes: 0,
     columns: [],
     linkIndex: -1,
-    quantity: 1,
   })
 
   const [firstTime, setFirstTime] = useState(true)
@@ -119,27 +117,6 @@ export default function LinkComponent(props: LinkComponentProps) {
     <Grid container justify='space-between'>
       <Grid item xs={12}>
         <Typography variant='subtitle1'>Link {linkIndex + 1}</Typography>
-      </Grid>
-
-      <Grid item xs={7}>
-        <Typography variant='subtitle1'>Quantity</Typography>
-      </Grid>
-      <Grid item xs={5}>
-        <TextField
-          fullWidth
-          type='number'
-          value={link.quantity}
-          InputProps={{ inputProps: { min: 0, max: 100000 } }}
-          onChange={event => {
-            const newQuantity = Number(event.target.value)
-            const newLink = {
-              ...link,
-              quantity: newQuantity,
-            }
-
-            setLink(newLink)
-          }}
-        />
       </Grid>
 
       <Grid item xs={7}>

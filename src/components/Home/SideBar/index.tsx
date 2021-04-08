@@ -39,9 +39,10 @@ export default function SideBar() {
   const [insulatorSize, setInsulatorSize] = useState('')
   const [terminationMaterial, setTerminationMaterial] = useState('')
   const [linkConfiguration, setLinkConfiguration] = useState(0)
+  const [quantity, setQuantity] = useState(1)
 
   const [links, setLinks] = useState<Array<LinkComponentType>>([
-    { positionOfFeet: 0, holes: 0, columns: [], linkIndex: 0, quantity: 1 },
+    { positionOfFeet: 0, holes: 0, columns: [], linkIndex: 0 },
   ])
 
   const baseMaterialOptions = [
@@ -154,6 +155,21 @@ export default function SideBar() {
               onChange={setFeetMaterial}
             />
           }
+        </Grid>
+
+        <Grid item xs={7}>
+          <Typography variant='subtitle1'>Quantity</Typography>
+        </Grid>
+        <Grid item xs={5}>
+          <TextField
+            fullWidth
+            type='number'
+            value={quantity}
+            InputProps={{ inputProps: { min: 0, max: 100000 } }}
+            onChange={event => {
+              setQuantity(Number(event.target.value))
+            }}
+          />
         </Grid>
 
         <Grid item xs={7}>
